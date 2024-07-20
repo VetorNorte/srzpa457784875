@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+</head>
+<body>
+    <a href="request.html">Pedir Conteudo</a>
+  <div>
+    <h1>Top 50 Movies</h1>
+    <ul id="top-movies"></ul>
+    <h1>Top 50 Series</h1>
+    <ul id="top-series"></ul>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      fetch('/api/top-movies')
+        .then(response => response.json())
+        .then(data => {
+          const moviesList = document.getElementById('top-movies');
+          data.forEach(movie => {
+            const li = document.createElement('li');
+            li.textContent = `${movie.name} - ${movie.requests} requests${movie.added ? ` (Added on ${movie.added})` : ''}`;
+            moviesList.appendChild(li);
+          });
+        });
+
+      fetch('/api/top-series')
+        .then(response => response.json())
+        .then(data => {
+          const seriesList = document.getElementById('top-series');
+          data.forEach(series => {
+            const li = document.createElement('li');
+            li.textContent = `${series.name} - ${series.requests} requests${series.added ? ` (Added on ${series.added})` : ''}`;
+            seriesList.appendChild(li);
+          });
+        });
+    });
+  </script>
+</body>
+</html>

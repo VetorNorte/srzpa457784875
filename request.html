@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Content</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .form-container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      margin-bottom: 10px;
+    }
+    input[type="text"], input[type="email"], input[type="tel"], input[type="checkbox"], button {
+      margin-bottom: 10px;
+    }
+    button {
+      background-color: #007BFF;
+      color: #fff;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .notification {
+      background-color: #4caf50;
+      color: white;
+      padding: 10px;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      border-radius: 5px;
+      display: none;
+    }
+    .error {
+      background-color: #f44336;
+      color: white;
+      padding: 10px;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      border-radius: 5px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <form id="request-form">
+      <label for="name">Nome:</label>
+      <input type="text" id="name" name="name" required>
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required>
+      <label for="phone">Telefone:</label>
+      <input type="tel" id="phone" name="phone" required>
+      <label>
+        <input type="checkbox" id="is-movie" name="type" value="movie"> Filme
+      </label>
+      <label>
+        <input type="checkbox" id="is-series" name="type" value="series"> Série
+      </label>
+      <div id="movie-input" style="display: none;">
+        <label for="movie-name">Nome do Filme:</label>
+        <input type="text" id="movie-name" name="movie-name">
+      </div>
+      <div id="series-input" style="display: none;">
+        <label for="series-name">Nome da Série:</label>
+        <input type="text" id="series-name" name="series-name">
+        <label>
+          <input type="checkbox" id="update-series" name="category" value="update"> Atualização
+        </label>
+        <label>
+          <input type="checkbox" id="include-series" name="category" value="include"> Inclusão
+        </label>
+      </div>
+      <button type="button" id="submit-button">ENVIAR</button>
+    </form>
+    <div class="notification" id="notification">Solicitação enviada com sucesso!</div>
+    <div class="error" id="error">Erro ao enviar solicitação. Tente novamente mais tarde.</div>
+  </div>
+
+  <script>
+    document.getElementById('is-movie').addEventListener('change', function() {
+      document.getElementById('movie-input').style.display = this.checked ? 'block' : 'none';
+    });
+
+    document.getElementById('is-series').addEventListener('change', function() {
+      document.getElementById('series-input').style.display = this.checked ? 'block' : 'none';
+    });
+
+    document.getElementById('submit-button').addEventListener('click', function() {
+      const formData = new FormData(document.getElementById('request-form'));
+      const data = Object.fromEntries(formData.entries());
+
+      fetch('http://localhost:3000/api/request', {  // Certifique-se de que a URL está correta e que o servidor está em execução.
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      .then(response => response.json())
+      .then(result => {
+        if (result.message) {
+          const notification = document.getElementById('notification');
+          notification.style.display = 'block';
+          setTimeout(() => {
+            notification.style.display = 'none';
+            window.location.href = '/';
+          }, 2000);
+        }
+      })
+      .catch(error => {
+        const errorNotification = document.getElementById('error');
+        errorNotification.style.display = 'block';
+        setTimeout(() => {
+          errorNotification.style.display = 'none';
+        }, 3000);
+        console.error('Error:', error);
+      });
+    });
+  </script>
+</body>
+</html>
